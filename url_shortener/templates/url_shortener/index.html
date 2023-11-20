@@ -1,0 +1,43 @@
+{% extends "url_shortener/layout.html" %} 
+{% load static %}
+
+{% block body %}
+    <div class="main-container">
+        <div class="shadow p-3 mb-5 rounded">
+            <h1 class="main-heading">
+                <strong style="color: blue;">ZIP</strong>
+                <strong> URL</strong>
+            </h1>
+            
+            {% if message %}
+                <div class="alert alert-danger">{{ message }}</div>
+            {% endif %}
+
+            <form action="{% url "index" %}" method="post">
+                {% csrf_token %}
+                <div class="mb-3">
+                    <label for="long-url" class="form-label"><strong>Paste A Long URL</strong></label>
+                    <input
+                    name="long-url"
+                    type="url"
+                    class="form-control"
+                    id="long-url"
+                    required
+                    placeholder="Example: https://super-long-link.com/shorten-it"
+                    />
+                </div>
+                <label for="" class="form-label">
+                    <strong>Domain and Alias (optional)</strong>
+                </label>
+                <div class="input-group mb-3">
+                    <input type="text" class="form-control" placeholder="http://127.0.0.1:8000/" aria-label="domain" name="domain" id="domain" disabled default="http://127.0.0.1:8000/">
+                    <span class="input-group-text">/</span>
+                    <input type="text" class="form-control" name="alias" id="alias" placeholder="Custom Alias">
+                </div>
+                <div class="d-grid gap-2">
+                    <button type="submit" class="btn btn-primary">Sign Up and Get Your Link</button>
+                </div>
+            </form>
+        </div>
+    </div>
+{% endblock %}

@@ -1,0 +1,61 @@
+{% extends "url_shortener/layout.html" %} 
+{% load static %}
+
+{% block main %}
+    {% if messages %}
+        <div class="toast-container position-fixed bottom-0 end-0 p-3">
+            <div class="toast show" role="alert" aria-live="assertive" aria-atomic="true">
+                <div class="toast-header">
+                    <img src="{% static "url_shortener/icon.png" %}" class="rounded me-2" alt="..." width="15px">
+                    <strong class="me-auto">Zip</strong>
+                    <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+                </div>
+                <div class="toast-body">
+                    {% for message in messages %}
+                        {{ message }}
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    {% endif %}
+
+    <div class="toast-container position-fixed bottom-0 end-0 p-3">
+        <div id="liveToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="toast-header">
+                <img src="{% static "url_shortener/icon.png" %}" class="rounded me-2" alt="..." width="15px">
+                <strong class="me-auto">Zip</strong>
+                <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+            <div class="toast-body" id="toast-body">
+                
+            </div>
+        </div>
+    </div>  
+    <div id="profileDiv">
+        <h3 style="font-family: Arial; margin-bottom: 20px; margin-top: 20px;">Profile</h3>
+        <h5 style="margin-bottom: 10px;">Username</h5>
+        <input type="text" class="form-control" style="margin-bottom: 10px;" value="{{ name }}" id="usernameInput" autocomplete=off>
+        <button class="btn btn-primary" disabled id="updateUsernameBtn" data-name="{{ name }}">Update username</button>
+        <hr>
+        <h5 style="margin-bottom: 10px;">Change Password</h5>
+        <h6 style="margin-bottom: 10px">You will be required to login after changing your password</h6>
+        <form action="{% url "reset_password" %}" method="post">
+            {% csrf_token %}
+            <div class="mb-3">
+                <label for="oldPassword" class="form-label">Old password</label>
+                <input type="password" name="old_password" id="oldPassword" class="form-control" required autocomplete="off">
+            </div>
+            <div class="mb-3">
+                <label for="newPassword" class="form-label">New password</label>
+                <input type="password" name="new_password" id="newPassword" class="form-control" required>
+            </div>
+            <div class="mb-3">
+                <label for="confirmPassword" class="form-label">Confirm password</label>
+                <input type="password" name="confirm_password" id="confirmPassword" class="form-control" required>
+            </div>
+            <button type="submit" class="btn btn-primary">Change Password</button>
+        </form>
+    </div>
+{% endblock %}
+
+

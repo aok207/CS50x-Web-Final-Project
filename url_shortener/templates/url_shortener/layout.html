@@ -1,0 +1,346 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Zip URL</title>
+
+    <link rel="shortcut icon" href="{% static "url_shortener/icon.png" %}" type="image/x-icon">
+
+    <link rel="stylesheet" href="{% static "url_shortener/styles.css" %}">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+    
+    <script src="https://kit.fontawesome.com/dae30d5266.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  </head>
+  <body style="height: 100vh;">
+    {% if user.is_authenticated %}
+      <main class="container-fluid">
+        <div class="row">
+          <!-- The sidebar in normal size -->
+          <div class="col-md-auto border p-0 m-0 position-fixed" style="z-index: 1031;" id="normal-sidebar">
+            <div class="d-flex flex-column flex-shrink-0 p-3 bg-body-tertiary sidebar" style="width: 240px; height: 100vh;" id="sidebar-wrapper">
+              <button class="btn" id="toggle-sidebar" title="Toggle sidebar" ><svg xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 448 512" style="position:relative; top: -2px;"><!--! Font Awesome Free 6.4.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. --><path d="M0 96C0 78.3 14.3 64 32 64H416c17.7 0 32 14.3 32 32s-14.3 32-32 32H32C14.3 128 0 113.7 0 96zM0 256c0-17.7 14.3-32 32-32H416c17.7 0 32 14.3 32 32s-14.3 32-32 32H32c-17.7 0-32-14.3-32-32zM448 416c0 17.7-14.3 32-32 32H32c-17.7 0-32-14.3-32-32s14.3-32 32-32H416c17.7 0 32 14.3 32 32z"/></svg></button>
+              <hr id="toggle-sidebar-hr">
+              <a href="{% url "index" %}" class="d-flex align-items-center mb-3 mb-md-0 me-md-auto link-body-emphasis text-decoration-none">
+                <img src="{% static "url_shortener/icon.png" %}" alt="Logo" width="30" class="d-inline-block align-text-top list-group-item" style="margin: 0 10px;">
+                <strong style="color:blue;" class="sidebar-text">ZipURL</strong> 
+              </a>
+              <br>
+              <a href="{% url "create" %}" style="margin-top: 10px" id="create-url" title="Create new URL" class="btn btn-primary">Create a new URL</a>
+              <hr>
+              <ul class="nav nav-pills flex-column mb-auto">
+                <li class="list-group-item">
+                  <a href="{% url "dashboard" %}" class="nav-link link-body-emphasis dashboard-nav-item dashboard-nav-item" aria-current="page" title="Home">
+                    <svg xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 576 512" class="dashboard-icons"><!--! Font Awesome Free 6.4.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. --><style>svg{fill:#000000}</style><path d="M575.8 255.5c0 18-15 32.1-32 32.1h-32l.7 160.2c0 2.7-.2 5.4-.5 8.1V472c0 22.1-17.9 40-40 40H456c-1.1 0-2.2 0-3.3-.1c-1.4 .1-2.8 .1-4.2 .1H416 392c-22.1 0-40-17.9-40-40V448 384c0-17.7-14.3-32-32-32H256c-17.7 0-32 14.3-32 32v64 24c0 22.1-17.9 40-40 40H160 128.1c-1.5 0-3-.1-4.5-.2c-1.2 .1-2.4 .2-3.6 .2H104c-22.1 0-40-17.9-40-40V360c0-.9 0-1.9 .1-2.8V287.6H32c-18 0-32-14-32-32.1c0-9 3-17 10-24L266.4 8c7-7 15-8 22-8s15 2 21 7L564.8 231.5c8 7 12 15 11 24z"/></svg>
+                    <span class="sidebar-text">Home</span>
+                  </a>
+                </li>
+                <li class="list-group-item">
+                  <a href="{% url "links" %}" class="nav-link link-body-emphasis dashboard-nav-item" title="Links">
+                    <svg xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 640 512" class="dashboard-icons"><!--! Font Awesome Free 6.4.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. --><style>svg{fill:#000000}</style><path d="M579.8 267.7c56.5-56.5 56.5-148 0-204.5c-50-50-128.8-56.5-186.3-15.4l-1.6 1.1c-14.4 10.3-17.7 30.3-7.4 44.6s30.3 17.7 44.6 7.4l1.6-1.1c32.1-22.9 76-19.3 103.8 8.6c31.5 31.5 31.5 82.5 0 114L422.3 334.8c-31.5 31.5-82.5 31.5-114 0c-27.9-27.9-31.5-71.8-8.6-103.8l1.1-1.6c10.3-14.4 6.9-34.4-7.4-44.6s-34.4-6.9-44.6 7.4l-1.1 1.6C206.5 251.2 213 330 263 380c56.5 56.5 148 56.5 204.5 0L579.8 267.7zM60.2 244.3c-56.5 56.5-56.5 148 0 204.5c50 50 128.8 56.5 186.3 15.4l1.6-1.1c14.4-10.3 17.7-30.3 7.4-44.6s-30.3-17.7-44.6-7.4l-1.6 1.1c-32.1 22.9-76 19.3-103.8-8.6C74 372 74 321 105.5 289.5L217.7 177.2c31.5-31.5 82.5-31.5 114 0c27.9 27.9 31.5 71.8 8.6 103.9l-1.1 1.6c-10.3 14.4-6.9 34.4 7.4 44.6s34.4 6.9 44.6-7.4l1.1-1.6C433.5 260.8 427 182 377 132c-56.5-56.5-148-56.5-204.5 0L60.2 244.3z"/></svg>
+                    <span class="sidebar-text">Links</span>
+                  </a>
+                </li>
+                <li class="list-group-item">
+                  <a href="{% url "analytics" %}" class="nav-link link-body-emphasis dashboard-nav-item" title="Analytics">
+                    <svg xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 512 512" class="dashboard-icons"><!--! Font Awesome Free 6.4.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. --><style>svg{fill:#000000}</style><path d="M64 64c0-17.7-14.3-32-32-32S0 46.3 0 64V400c0 44.2 35.8 80 80 80H480c17.7 0 32-14.3 32-32s-14.3-32-32-32H80c-8.8 0-16-7.2-16-16V64zm406.6 86.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L320 210.7l-57.4-57.4c-12.5-12.5-32.8-12.5-45.3 0l-112 112c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L240 221.3l57.4 57.4c12.5 12.5 32.8 12.5 45.3 0l128-128z"/></svg>
+                    <span class="sidebar-text">Analytics</span>
+                  </a>
+                </li>
+                <li class="list-group-item">
+                  <a href="{% url "profile" %}" class="nav-link link-body-emphasis dashboard-nav-item" title="Profile">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" height="1em" class="dashboard-icons"><!--! Font Awesome Pro 6.4.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. --><path d="M224 256A128 128 0 1 0 224 0a128 128 0 1 0 0 256zm-45.7 48C79.8 304 0 383.8 0 482.3C0 498.7 13.3 512 29.7 512H418.3c16.4 0 29.7-13.3 29.7-29.7C448 383.8 368.2 304 269.7 304H178.3z"/></svg>
+                    <span class="sidebar-text">Profile</span>
+                  </a>
+                </li>
+              </ul>
+            </div>
+            <!-- wrapper -->
+          </div>
+
+          <!-- The sidebar in tablet size -->
+          <div class="col-md-auto border p-0 m-0 position-fixed" style="z-index: 1031;" id="tablet-sidebar">
+            <div class="d-flex flex-column flex-shrink-0 p-3 bg-body-tertiary sidebar" style="width: 80px; height: 100vh;" id="sidebar-wrapper">
+              <a href="{% url "index" %}" class="d-flex align-items-center mb-3 mb-md-0 me-md-auto link-body-emphasis text-decoration-none">
+                <img src="{% static "url_shortener/icon.png" %}" alt="Logo" width="30" class="d-inline-block align-text-top list-group-item" style="margin: 0 10px;">
+              </a>
+              <br>
+              <a href="{% url "create" %}" style="margin-top: 10px" id="create-url" title="Create new URL" class="btn btn-primary">
+                <svg xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 448 512" style="position:relative; top: -2px;"><path d="M256 80c0-17.7-14.3-32-32-32s-32 14.3-32 32V224H48c-17.7 0-32 14.3-32 32s14.3 32 32 32H192V432c0 17.7 14.3 32 32 32s32-14.3 32-32V288H400c17.7 0 32-14.3 32-32s-14.3-32-32-32H256V80z" style="fill:#ffffff"/></svg>
+              </a>
+              <hr>
+              <ul class="nav nav-pills flex-column mb-auto">
+                <li class="list-group-item">
+                  <a href="{% url "dashboard" %}" class="nav-link link-body-emphasis dashboard-nav-item dashboard-nav-item" aria-current="page" title="Home">
+                    <svg xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 576 512" class="dashboard-icons"><!--! Font Awesome Free 6.4.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. --><style>svg{fill:#000000}</style><path d="M575.8 255.5c0 18-15 32.1-32 32.1h-32l.7 160.2c0 2.7-.2 5.4-.5 8.1V472c0 22.1-17.9 40-40 40H456c-1.1 0-2.2 0-3.3-.1c-1.4 .1-2.8 .1-4.2 .1H416 392c-22.1 0-40-17.9-40-40V448 384c0-17.7-14.3-32-32-32H256c-17.7 0-32 14.3-32 32v64 24c0 22.1-17.9 40-40 40H160 128.1c-1.5 0-3-.1-4.5-.2c-1.2 .1-2.4 .2-3.6 .2H104c-22.1 0-40-17.9-40-40V360c0-.9 0-1.9 .1-2.8V287.6H32c-18 0-32-14-32-32.1c0-9 3-17 10-24L266.4 8c7-7 15-8 22-8s15 2 21 7L564.8 231.5c8 7 12 15 11 24z"/></svg>
+                  </a>
+                </li>
+                <li class="list-group-item">
+                  <a href="{% url "links" %}" class="nav-link link-body-emphasis dashboard-nav-item" title="Links">
+                    <svg xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 640 512" class="dashboard-icons"><!--! Font Awesome Free 6.4.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. --><style>svg{fill:#000000}</style><path d="M579.8 267.7c56.5-56.5 56.5-148 0-204.5c-50-50-128.8-56.5-186.3-15.4l-1.6 1.1c-14.4 10.3-17.7 30.3-7.4 44.6s30.3 17.7 44.6 7.4l1.6-1.1c32.1-22.9 76-19.3 103.8 8.6c31.5 31.5 31.5 82.5 0 114L422.3 334.8c-31.5 31.5-82.5 31.5-114 0c-27.9-27.9-31.5-71.8-8.6-103.8l1.1-1.6c10.3-14.4 6.9-34.4-7.4-44.6s-34.4-6.9-44.6 7.4l-1.1 1.6C206.5 251.2 213 330 263 380c56.5 56.5 148 56.5 204.5 0L579.8 267.7zM60.2 244.3c-56.5 56.5-56.5 148 0 204.5c50 50 128.8 56.5 186.3 15.4l1.6-1.1c14.4-10.3 17.7-30.3 7.4-44.6s-30.3-17.7-44.6-7.4l-1.6 1.1c-32.1 22.9-76 19.3-103.8-8.6C74 372 74 321 105.5 289.5L217.7 177.2c31.5-31.5 82.5-31.5 114 0c27.9 27.9 31.5 71.8 8.6 103.9l-1.1 1.6c-10.3 14.4-6.9 34.4 7.4 44.6s34.4 6.9 44.6-7.4l1.1-1.6C433.5 260.8 427 182 377 132c-56.5-56.5-148-56.5-204.5 0L60.2 244.3z"/></svg>
+                  </a>
+                </li>
+                <li class="list-group-item">
+                  <a href="{% url "analytics" %}" class="nav-link link-body-emphasis dashboard-nav-item" title="Analytics">
+                    <svg xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 512 512" class="dashboard-icons"><!--! Font Awesome Free 6.4.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. --><style>svg{fill:#000000}</style><path d="M64 64c0-17.7-14.3-32-32-32S0 46.3 0 64V400c0 44.2 35.8 80 80 80H480c17.7 0 32-14.3 32-32s-14.3-32-32-32H80c-8.8 0-16-7.2-16-16V64zm406.6 86.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L320 210.7l-57.4-57.4c-12.5-12.5-32.8-12.5-45.3 0l-112 112c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L240 221.3l57.4 57.4c12.5 12.5 32.8 12.5 45.3 0l128-128z"/></svg>
+                  </a>
+                </li>
+                <li class="list-group-item">
+                  <a href="{% url "profile" %}" class="nav-link link-body-emphasis dashboard-nav-item" title="Profile">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" height="1em" class="dashboard-icons"><!--! Font Awesome Pro 6.4.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. --><path d="M224 256A128 128 0 1 0 224 0a128 128 0 1 0 0 256zm-45.7 48C79.8 304 0 383.8 0 482.3C0 498.7 13.3 512 29.7 512H418.3c16.4 0 29.7-13.3 29.7-29.7C448 383.8 368.2 304 269.7 304H178.3z"/></svg>
+                  </a>
+                </li>
+              </ul>
+            </div>
+            <!-- wrapper -->
+          </div>
+
+          <!-- Small screen sidebar -->
+          <div class="col-md-auto border p-0 m-0 position-fixed" style="z-index: 1031; display: none;" id="sm-screen-sidebar">
+            <div class="d-flex flex-column flex-shrink-0 p-3 bg-body-tertiary sidebar" style="width: 100vw; height: 100vh;" id="sidebar-wrapper">
+              <button class="btn" id="sm-uncollapse-sidebar" title="Toggle sidebar" ><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512" height="1.5em"><!--! Font Awesome Pro 6.4.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. --><path d="M342.6 150.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L192 210.7 86.6 105.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L146.7 256 41.4 361.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L192 301.3 297.4 406.6c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L237.3 256 342.6 150.6z"/ style="fill: #000000;"></svg></button>
+              <hr>
+
+              <a href="{% url "index" %}" class="d-flex align-items-center mb-3 mb-md-0 me-md-auto link-body-emphasis text-decoration-none list-group-item">
+                <img src="{% static "url_shortener/icon.png" %}" alt="Logo" width="30" class="d-inline-block align-text-top list-group-item" style="margin: 0 10px;">
+                <strong style="color:blue;" class="sidebar-text">ZipURL</strong> 
+              </a>
+              <br>
+              <a href="{% url "create" %}" style="margin-top: 10px" id="create-url" title="Create new URL" class="btn btn-primary">Create a new URL</a>
+              <hr>
+              <ul class="nav nav-pills flex-column mb-auto">
+                <li class="list-group-item">
+                  <a href="{% url "dashboard" %}" class="nav-link link-body-emphasis dashboard-nav-item dashboard-nav-item" aria-current="page" title="Home">
+                    <svg xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 576 512" class="dashboard-icons"><!--! Font Awesome Free 6.4.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. --><style>svg{fill:#000000}</style><path d="M575.8 255.5c0 18-15 32.1-32 32.1h-32l.7 160.2c0 2.7-.2 5.4-.5 8.1V472c0 22.1-17.9 40-40 40H456c-1.1 0-2.2 0-3.3-.1c-1.4 .1-2.8 .1-4.2 .1H416 392c-22.1 0-40-17.9-40-40V448 384c0-17.7-14.3-32-32-32H256c-17.7 0-32 14.3-32 32v64 24c0 22.1-17.9 40-40 40H160 128.1c-1.5 0-3-.1-4.5-.2c-1.2 .1-2.4 .2-3.6 .2H104c-22.1 0-40-17.9-40-40V360c0-.9 0-1.9 .1-2.8V287.6H32c-18 0-32-14-32-32.1c0-9 3-17 10-24L266.4 8c7-7 15-8 22-8s15 2 21 7L564.8 231.5c8 7 12 15 11 24z"/></svg>
+                    <span class="sidebar-text">Home</span>
+                  </a>
+                </li>
+                <li class="list-group-item">
+                  <a href="{% url "links" %}" class="nav-link link-body-emphasis dashboard-nav-item" title="Links">
+                    <svg xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 640 512" class="dashboard-icons"><!--! Font Awesome Free 6.4.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. --><style>svg{fill:#000000}</style><path d="M579.8 267.7c56.5-56.5 56.5-148 0-204.5c-50-50-128.8-56.5-186.3-15.4l-1.6 1.1c-14.4 10.3-17.7 30.3-7.4 44.6s30.3 17.7 44.6 7.4l1.6-1.1c32.1-22.9 76-19.3 103.8 8.6c31.5 31.5 31.5 82.5 0 114L422.3 334.8c-31.5 31.5-82.5 31.5-114 0c-27.9-27.9-31.5-71.8-8.6-103.8l1.1-1.6c10.3-14.4 6.9-34.4-7.4-44.6s-34.4-6.9-44.6 7.4l-1.1 1.6C206.5 251.2 213 330 263 380c56.5 56.5 148 56.5 204.5 0L579.8 267.7zM60.2 244.3c-56.5 56.5-56.5 148 0 204.5c50 50 128.8 56.5 186.3 15.4l1.6-1.1c14.4-10.3 17.7-30.3 7.4-44.6s-30.3-17.7-44.6-7.4l-1.6 1.1c-32.1 22.9-76 19.3-103.8-8.6C74 372 74 321 105.5 289.5L217.7 177.2c31.5-31.5 82.5-31.5 114 0c27.9 27.9 31.5 71.8 8.6 103.9l-1.1 1.6c-10.3 14.4-6.9 34.4 7.4 44.6s34.4 6.9 44.6-7.4l1.1-1.6C433.5 260.8 427 182 377 132c-56.5-56.5-148-56.5-204.5 0L60.2 244.3z"/></svg>
+                    <span class="sidebar-text">Links</span>
+                  </a>
+                </li>
+                <li class="list-group-item">
+                  <a href="{% url "analytics" %}" class="nav-link link-body-emphasis dashboard-nav-item" title="Analytics">
+                    <svg xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 512 512" class="dashboard-icons"><!--! Font Awesome Free 6.4.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. --><style>svg{fill:#000000}</style><path d="M64 64c0-17.7-14.3-32-32-32S0 46.3 0 64V400c0 44.2 35.8 80 80 80H480c17.7 0 32-14.3 32-32s-14.3-32-32-32H80c-8.8 0-16-7.2-16-16V64zm406.6 86.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L320 210.7l-57.4-57.4c-12.5-12.5-32.8-12.5-45.3 0l-112 112c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L240 221.3l57.4 57.4c12.5 12.5 32.8 12.5 45.3 0l128-128z"/></svg>
+                    <span class="sidebar-text">Analytics</span>
+                  </a>
+                </li>
+                <li class="list-group-item">
+                  <a href="{% url "profile" %}" class="nav-link link-body-emphasis dashboard-nav-item" title="Profile">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" height="1em" class="dashboard-icons"><!--! Font Awesome Pro 6.4.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. --><path d="M224 256A128 128 0 1 0 224 0a128 128 0 1 0 0 256zm-45.7 48C79.8 304 0 383.8 0 482.3C0 498.7 13.3 512 29.7 512H418.3c16.4 0 29.7-13.3 29.7-29.7C448 383.8 368.2 304 269.7 304H178.3z"/></svg>
+                    <span class="sidebar-text">Profile</span>
+                  </a>
+                </li>
+              </ul>
+            </div>
+            <!-- wrapper -->
+          </div>
+
+          <!-- Main content -->
+          <div class="col-md" id="main-content" style="padding:0;">
+            <!-- Normal navbar-->
+            <nav class="navbar navbar-expand-lg navbar-light bg-light bg-body-tertiary fixed-top" style="width:100%;" id="normalNavbar">
+              <div class="container-fluid d-flex">
+                <div class="ms-auto">
+                  
+                  <form class="d-flex" method="post" action="{% url "links" %}">
+                    {% csrf_token %}
+                    <div class="search-div">
+                      <label>
+                        <svg xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 512 512" class="position-relative" style="top:3px; right:-25px;"><!--! Font Awesome Free 6.4.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. --><path d="M416 208c0 45.9-14.9 88.3-40 122.7L502.6 457.4c12.5 12.5 12.5 32.8 0 45.3s-32.8 12.5-45.3 0L330.7 376c-34.4 25.2-76.8 40-122.7 40C93.1 416 0 322.9 0 208S93.1 0 208 0S416 93.1 416 208zM208 352a144 144 0 1 0 0-288 144 144 0 1 0 0 288z" style="fill:#000000"/>
+                      </label>
+                      <input placeholder="Search" id="search-links" name="search_query">
+                      <button type="submit" id="search-btn">
+                        <svg xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 512 512" style="position:relative; top: -2px"><!--! Font Awesome Free 6.4.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. --><path d="M416 208c0 45.9-14.9 88.3-40 122.7L502.6 457.4c12.5 12.5 12.5 32.8 0 45.3s-32.8 12.5-45.3 0L330.7 376c-34.4 25.2-76.8 40-122.7 40C93.1 416 0 322.9 0 208S93.1 0 208 0S416 93.1 416 208zM208 352a144 144 0 1 0 0-288 144 144 0 1 0 0 288z" style="fill:#ffffff"/></svg>
+                      </button>
+                    </div>
+                  </form>
+
+                </div>
+
+                <div class="github">
+                  <a href="https://github.com/aok207" class="btn" target="blank" title="My github link">
+                    <svg xmlns="http://www.w3.org/2000/svg" height="2em" viewBox="0 0 496 512"><!--! Font Awesome Free 6.4.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. --><path d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6zm-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3zm44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9zM244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8zM97.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1zm-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7zm32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1zm-11.4-14.7c-1.6 1-1.6 3.6 0 5.9 1.6 2.3 4.3 3.3 5.6 2.3 1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2z"/></svg>
+                  </a>
+                </div>
+
+                <div class="dropdown">
+                  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" id="userInfoDropdown">
+                    <div class="avatar">
+                      <span>{{ user.username.0 }}</span>
+                    </div>
+                      {{ user.username }}
+                  </button>
+                  <ul class="dropdown-menu dropdown-menu-end">
+                    <li class="dropdown-item disabled">
+                      <div id="avatarDropdown">
+                        <div class="avatar">
+                          <span>{{ user.username.0 }}</span>
+                        </div>
+                        <span style="font-weight: bold; color: black;">{{ user.username }}</span>
+                      </div>
+                      {{ user.email }}
+                    </li>
+                    <hr>
+                    <li><a class="dropdown-item" href="{% url "profile" %}">Profile</a></li>
+                    <hr>
+                    <li><a class="dropdown-item" href="{% url "logout" %}">Log Out</a></li>
+                  </ul>
+                </div>
+              </div>
+            </nav>
+            
+            <!-- Small screen navbar -->
+            <nav class="navbar navbar-expand-lg navbar-light bg-light bg-body-tertiary fixed-top" style="width:100vw;" id="smallScreenNavBar">
+              <div class="container-fluid d-flex">
+                <div id="smallSidebarToggleBtnDiv">
+                  <button class="btn" id="smallToggleSidebarBtn" title="Toggle sidebar" ><svg xmlns="http://www.w3.org/2000/svg" height="1.4em" viewBox="0 0 448 512" style="position:relative; top: -2px;"><!--! Font Awesome Free 6.4.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. --><path d="M0 96C0 78.3 14.3 64 32 64H416c17.7 0 32 14.3 32 32s-14.3 32-32 32H32C14.3 128 0 113.7 0 96zM0 256c0-17.7 14.3-32 32-32H416c17.7 0 32 14.3 32 32s-14.3 32-32 32H32c-17.7 0-32-14.3-32-32zM448 416c0 17.7-14.3 32-32 32H32c-17.7 0-32-14.3-32-32s14.3-32 32-32H416c17.7 0 32 14.3 32 32z"/></svg></button>
+                </div>
+
+                <div id="smScreenLogo">
+                  <a href="{% url "index" %}" class="link-body-emphasis text-decoration-none">
+                    <img src="{% static "url_shortener/icon.png" %}" alt="Logo" width="30" class="d-inline-block align-text-top list-group-item" style="margin: 0 10px;"> 
+                  </a>
+                </div>
+                
+                <div id="smallScreenSearchBar" style="width: 100%;">
+                  <form class="d-flex" method="post" action="{% url "links" %}">
+                    {% csrf_token %}
+                    <div class="search-div" style="width: 100%; justify-content: center;">
+                      <label>
+                        <svg xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 512 512" class="position-relative" style="top:5.5px; right:-25px;"><!--! Font Awesome Free 6.4.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. --><path d="M416 208c0 45.9-14.9 88.3-40 122.7L502.6 457.4c12.5 12.5 12.5 32.8 0 45.3s-32.8 12.5-45.3 0L330.7 376c-34.4 25.2-76.8 40-122.7 40C93.1 416 0 322.9 0 208S93.1 0 208 0S416 93.1 416 208zM208 352a144 144 0 1 0 0-288 144 144 0 1 0 0 288z" style="fill:#000000"/>
+                      </label>
+                      <input placeholder="Search" id="search-links" name="search_query" style="border-right: 3px solid #000000;">
+                      <button type="button" class="btn" id="cancelSearchBtn">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512" height="1.5em"><!--! Font Awesome Pro 6.4.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. --><path d="M342.6 150.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L192 210.7 86.6 105.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L146.7 256 41.4 361.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L192 301.3 297.4 406.6c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L237.3 256 342.6 150.6z"/ style="fill: #000000;"></svg>
+                      </button>
+                    </div>
+                  </form>
+                </div>
+
+                <div class="ms-auto" id="smallScreenSearchBtnDiv">
+                  <button class="btn" id="smallScreenSearchBtn">
+                    <svg xmlns="http://www.w3.org/2000/svg" height="1.4em" viewBox="0 0 512 512" style="position:relative; top: -2px;"><!--! Font Awesome Free 6.4.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. --><path d="M416 208c0 45.9-14.9 88.3-40 122.7L502.6 457.4c12.5 12.5 12.5 32.8 0 45.3s-32.8 12.5-45.3 0L330.7 376c-34.4 25.2-76.8 40-122.7 40C93.1 416 0 322.9 0 208S93.1 0 208 0S416 93.1 416 208zM208 352a144 144 0 1 0 0-288 144 144 0 1 0 0 288z" style="fill:#000000"/></svg>
+                  </button>
+                </div>
+
+                <div class="github" id="smallScreenGithubDiv">
+                  <a href="https://github.com/aok207" class="btn" target="blank" title="My github link">
+                    <svg xmlns="http://www.w3.org/2000/svg" height="2em" viewBox="0 0 496 512"><!--! Font Awesome Free 6.4.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. --><path d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6zm-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3zm44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9zM244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8zM97.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1zm-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7zm32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1zm-11.4-14.7c-1.6 1-1.6 3.6 0 5.9 1.6 2.3 4.3 3.3 5.6 2.3 1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2z"/></svg>
+                  </a>
+                </div>
+
+                <div class="dropdown" id="smScreenUserInfoDiv">
+                  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" id="smUserInfoDropdown">
+                    <div class="avatar">
+                      <span>{{ user.username.0 }}</span>
+                    </div>
+                  </button>
+                  <ul class="dropdown-menu dropdown-menu-end">
+                    <li class="dropdown-item disabled">
+                      <div id="smAvatarDropdown">
+                        <div class="avatar">
+                          <span>{{ user.username.0 }}</span>
+                        </div>
+                        <span style="font-weight: bold; color: black;">{{ user.username }}</span>
+                      </div>
+                      {{ user.email }}
+                    </li>
+                    <hr>
+                    <li><a class="dropdown-item" href="{% url "profile" %}">Profile</a></li>
+                    <hr>
+                    <li><a class="dropdown-item" href="{% url "logout" %}">Log Out</a></li>
+                  </ul>
+                </div>
+              </div>
+            </nav>
+
+            <script>
+              // Dashboard navbar toggle
+              if (window.innerWidth > 991) {
+                const menuToggle = document.getElementById("toggle-sidebar");
+                const sidebarWrapper = document.getElementById("sidebar-wrapper");
+                const sidebarTexts = document.querySelectorAll(".sidebar-text");
+                const createBtn = document.getElementById("create-url");
+                const mainContent = document.getElementById("main-content");
+
+                let sidebarCollapsed = localStorage.getItem("sidebarCollapsed") === "true";
+
+                function toggleSidebar() {
+                  if (window.innerWidth > 991) {
+                    if (sidebarCollapsed === false) {
+                        sidebarWrapper.style.width = "80px";
+                        mainContent.style.marginLeft = "80px";
+
+                        createBtn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 448 512" style="position:relative; top: -2px;"><path d="M256 80c0-17.7-14.3-32-32-32s-32 14.3-32 32V224H48c-17.7 0-32 14.3-32 32s14.3 32 32 32H192V432c0 17.7 14.3 32 32 32s32-14.3 32-32V288H400c17.7 0 32-14.3 32-32s-14.3-32-32-32H256V80z" style="fill:#ffffff"/></svg>';
+
+                        sidebarTexts.forEach(text => text.classList.add("d-none"));
+                    } else {
+                        sidebarWrapper.style.width = "240px";
+                        mainContent.style.marginLeft = "240px";
+
+                        setTimeout(function () {
+                            createBtn.innerHTML = "Create a new URL";
+                            sidebarTexts.forEach(text => text.classList.remove("d-none"));
+                        }, 160);
+                    }
+
+                    sidebarWrapper.classList.toggle("collapsed");
+                  }
+                }
+                toggleSidebar();
+              }
+            </script>
+            <div id="dashboard-main-container">
+              {% block main %}{% endblock %}
+            </div>
+          </div>
+        </div>
+      </main>    
+    {% else %}
+      
+      <nav class="navbar navbar-expand-lg navbar-light bg-light" style="position:fixed; overflow:hidden; top:0; width:100%;">
+        <div class="container-fluid">
+          <a class="navbar-brand" href="{% url "index" %}">
+            <img src="{% static "url_shortener/icon.png" %}" alt="Logo" width="30" class="d-inline-block align-text-top"> <strong style="color:blue;">ZipURL</strong>
+          </a>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+          </button>
+          <div class="collapse navbar-collapse" id="navbarNavDropdown">
+            <ul class="navbar-nav ms-auto">
+              <li class="nav-item">
+                <a class="nav-link home-nav-link" aria-current="page" href="{% url "index" %}">Home</a>
+              </li>
+              {% if user.is_authenticated %}
+                <li class="nav-item">
+                  <a href="{% url "logout" %}" class="nav-link home-nav-link">Log Out</a>
+                </li>
+              {% else %}
+                <li class="nav-item">
+                  <a class="nav-link home-nav-link" href="{% url "login" %}">Log In</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link link-primary home-nav-link" href="{% url "signup" %}">
+                    Sign Up
+                  </a>
+                </li>
+              {% endif %}
+            </ul>
+          </div>
+        </div>
+      </nav>
+      <main style="margin-top: 60px;">
+        {% block body %}{% endblock %}
+      </main>
+    {% endif %}
+
+    <script src="{% static "url_shortener/index.js" %}"></script>
+  </body>
+</html>

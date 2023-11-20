@@ -1,0 +1,38 @@
+{% extends "url_shortener/layout.html" %} 
+{% load static %}
+
+{% block main %}
+    <div class="container-fluid" style="padding-top:61.6px; padding-bottom:0; margin-bottom:0;">
+        <h1 class="dashboard-headings">Welcome {{ user.username }}!</h1>
+        <h4 class="dashboard-info">Manage your links, track analytics, and more with our powerful URL shortener dashboard.</h4>
+        <div class="row m-1">
+            <div class="col-md-6 mb-3">
+                <div class="shadow p-3 mb-5 rounded text-center d-inline-grid">
+                    <div class="container-fluid">
+                        <h2 style="font-family: proxima nova bold;">Find and manage your links in one place</h2>
+                        <a href="{% url "links" %}" class="btn btn-outline-primary">Links</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6 mb-3">
+                <div class="shadow p-3 mb-5 rounded text-center d-inline-grid w-100">
+                    <div class="container-fluid">
+                        <h2 style="font-family: proxima nova bold;">Check the analytics for your links</h2>
+                        <a href="{% url "links" %}" class="btn btn-outline-primary">Analytics</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row m-1">
+            <div class="col mb-3">
+                <div class="shadow p-5 mb-5 rounded text-center d-inline-grid ms-auto" style="width:100%;">
+                    <div class="container-fluid">
+                        <h2 style="font-family: proxima nova bold;">Create a new URL</h2>
+                        <a href="{% url "create" %}" class="btn btn-primary">Create</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+{% endblock %}
+
+

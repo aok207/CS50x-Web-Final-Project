@@ -1,0 +1,60 @@
+{% extends "url_shortener/layout.html" %} 
+{% load static %}
+
+{% block main %}
+    <div style="margin-top: 80px; margin-right:20px; margin-left:20px;">
+        <h1 style="font-family: Arial; margin-bottom: 15px;">Analytics</h1>
+
+        <div class="row" style="width: 100%;">
+            <div class="col">
+                <div class="shadow p-5 mb-5 rounded d-block">
+                    <h3><strong>Clicks overtime</strong></h3>
+                    <h5 id="clickCount" data-count="{{ click_count }}">Total click count: {{ click_count }}</h5>
+                    <div id="lineChartContainer">
+                        <canvas id="lineChart" class="charts"></canvas>
+                        <h3 style="display: none;" id="lineChartMessage"></h3>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row" style="width: 100%;">
+            <div class="col">
+                <div class="shadow p-5 mb-5 rounded d-block">
+                    <h3><strong>Clicks by location</strong></h3>
+                    <div id="barChartContainer">
+                        <canvas id="barChart" class="charts" height="300px"></canvas>
+                        <h3 style="display: none;" id="barChartMessage"></h3>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row" style="width: 100%;">
+            <div class="col">
+                <div class="shadow p-5 mb-5 rounded d-block w-auto">
+                    <h3><strong>Clicks by device</strong></h3>
+                    <div id="donutChartContainer">
+                        <canvas id="donutChart" style="height: 300px; width: 300px;"></canvas>
+                        <h3 style="display: none;" id="donutChartMessage"></h3>
+                    </div>                    
+                </div>
+            </div>
+        </div>
+
+        <script>
+            const lineChartData = {
+                labels: [{% for label in line_labels %}"{{ label }}", {% endfor %}],
+                counts: [{% for count in line_counts %}{{ count }}, {% endfor %}]
+            };
+            const barChartData = {
+                labels: [{% for label in location_labels %}"{{ label }}", {% endfor %}],
+                counts: [{% for count in location_counts %}{{ count }}, {% endfor %}]
+            };
+            const donutChartData = {
+                labels: [{% for label in device_labels %}"{{ label }}", {% endfor %}],
+                counts: [{% for count in device_counts %}{{ count }}, {% endfor %}]
+            };
+        </script>
+    </div>
+{% endblock %}
+
+

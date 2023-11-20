@@ -1,0 +1,7 @@
+Django
+djangorestframework
+beautifulsoup4
+pyperclip
+requests
+user-agents
+python-decouple
