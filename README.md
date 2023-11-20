@@ -48,11 +48,11 @@ Recognizing that a simple URL shortening service might not be complex enough, I 
 1. Clone the repository: `git clone https://github.com/aok207/CS50-web-final-project.git`
 2. Navigate to the project directory: `cd url_shortener`
 3. Install required packages: `pip install -r requirements.txt`
-4. Apply database migrations: `python manage.py migrate`
-5. Create .env file in the project root.
-6. Get an API key from from IPStack(It's free.), and add it to .env file like this: `API_KEY = YOUR_API_KEY`
-6. Run the development server: `python manage.py runserver`
-7. Open your browser and visit [http://127.0.0.1:8000/](http://127.0.0.1:8000/)
+4. Create .env file in the project root.
+5. Get an API key from from IPStack(It's free.), and add it to .env file like this: `API_KEY = YOUR_API_KEY`
+6. 4. Apply database migrations: `python manage.py migrate`
+7. Run the development server: `python manage.py runserver`
+8. Open your browser and visit [http://127.0.0.1:8000/](http://127.0.0.1:8000/)
 
 ## Additional Information
 
